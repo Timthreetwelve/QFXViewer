@@ -259,7 +259,15 @@ public partial class MainWindow : Window
 
     private void MnuSettings_Click(object sender, RoutedEventArgs e)
     {
-        DialogHelpers.ShowSettingsDialog();
+        if (!DialogHost.IsDialogOpen("MainDialogHost"))
+        {
+            DialogHelpers.ShowSettingsDialog();
+        }
+        else
+        {
+            DialogHost.Close("MainDialogHost");
+            DialogHelpers.ShowSettingsDialog();
+        }
     }
 
     private void BtnViewQfx_Click(object sender, RoutedEventArgs e)
@@ -275,7 +283,15 @@ public partial class MainWindow : Window
 
     private void MnuAbout_Click(object sender, RoutedEventArgs e)
     {
-        DialogHelpers.ShowAboutDialog();
+        if (!DialogHost.IsDialogOpen("MainDialogHost"))
+        {
+            DialogHelpers.ShowAboutDialog();
+        }
+        else
+        {
+            DialogHost.Close("MainDialogHost");
+            DialogHelpers.ShowAboutDialog();
+        }
     }
 
     private void Window_KeyDown(object sender, KeyEventArgs e)
@@ -333,11 +349,19 @@ public partial class MainWindow : Window
                     TextFileViewer.ViewTextFile(readme);
                 }
             }
+        }
 
-            // No CTRL or Shift key
-            if (e.Key == Key.F1)
+        // No CTRL or Shift key
+        if (e.Key == Key.F1)
+        {
+            if (!DialogHost.IsDialogOpen("MainDialogHost"))
             {
-
+                DialogHelpers.ShowAboutDialog();
+            }
+            else
+            {
+                DialogHost.Close("MainDialogHost");
+                DialogHelpers.ShowAboutDialog();
             }
         }
     }
