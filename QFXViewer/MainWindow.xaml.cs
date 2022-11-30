@@ -7,6 +7,8 @@ namespace QFXViewer;
 /// </summary>
 public partial class MainWindow : Window
 {
+    private string qfxFileName;
+
     #region Stopwatch
     private readonly Stopwatch stopwatch = new();
     #endregion Stopwatch
@@ -24,24 +26,6 @@ public partial class MainWindow : Window
         ReadSettings();
 
         ProcessCommandLine();
-
-    }
-
-    private void ProcessCommandLine()
-    {
-        string[] clArgs = Environment.GetCommandLineArgs();
-
-        if (clArgs?.Length > 1 && File.Exists(clArgs[1]))
-        {
-            log.Debug($"File was found: {clArgs[1]}");
-            FileInfo file = new(clArgs[1]);
-            if (string.Equals(file.Extension, ".qfx", StringComparison.OrdinalIgnoreCase))
-            {
-                log.Debug($"File has correct extension: {file.Extension}");
-
-                ProcessQfxFile(file.FullName);
-            }
-        }
     }
 
     #region Settings
@@ -135,7 +119,6 @@ public partial class MainWindow : Window
     {
     }
 
-
     private void Window_Closing(object sender, CancelEventArgs e)
     {
         // Stop the stopwatch and record elapsed time
@@ -204,6 +187,25 @@ public partial class MainWindow : Window
     }
     #endregion Unhandled Exception Handler
 
+    #region Command line
+    private void ProcessCommandLine()
+    {
+        string[] clArgs = Environment.GetCommandLineArgs();
+
+        if (clArgs?.Length > 1 && File.Exists(clArgs[1]))
+        {
+            log.Debug($"File was found: {clArgs[1]}");
+            FileInfo file = new(clArgs[1]);
+            if (string.Equals(file.Extension, ".qfx", StringComparison.OrdinalIgnoreCase))
+            {
+                log.Debug($"File has correct extension: {file.Extension}");
+                qfxFileName= file.FullName;
+                ProcessQfxFile(file.FullName);
+            }
+        }
+    }
+    #endregion Command line
+
     private void ProcessQfxFile(string qfxFile)
     {
         if (FinInfo.CheckQfxFile(qfxFile))
@@ -249,6 +251,7 @@ public partial class MainWindow : Window
         if (dlgOpen.ShowDialog() == true)
         {
             ProcessQfxFile(dlgOpen.FileName);
+            qfxFileName= dlgOpen.FileName;
         }
     }
 
@@ -259,7 +262,13 @@ public partial class MainWindow : Window
 
     private void BtnViewQfx_Click(object sender, RoutedEventArgs e)
     {
-        //TextFileViewer.ViewTextFile();
+        using Process p = new();
+        p.StartInfo.FileName = "notepad.exe";
+        p.StartInfo.Arguments = qfxFileName;
+        p.StartInfo.UseShellExecute = true;
+        p.StartInfo.ErrorDialog = false;
+        _ = p.Start();
+        log.Debug($"Opening {qfxFileName} in Notepad.exe");
     }
 
     private void MnuAbout_Click(object sender, RoutedEventArgs e)
@@ -329,5 +338,11 @@ public partial class MainWindow : Window
 
             }
         }
+    }
+
+    private void MnuReadMe_Click(object sender, RoutedEventArgs e)
+    {
+        string readme = Path.Combine(AppInfo.AppDirectory, "ReadMe.txt");
+        TextFileViewer.ViewTextFile(readme);
     }
 }
