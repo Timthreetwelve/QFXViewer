@@ -21,6 +21,15 @@
                 <Setter Property="HorizontalAlignment" Value="Right" />
             </Style>
 
+            <!--  Style for the page headers  -->
+            <Style
+                x:Key="PageHeader"
+                TargetType="TextBlock">
+                <Setter Property="FontSize" Value="20" />
+                <Setter Property="FontWeight" Value="DemiBold" />
+                <Setter Property="Padding" Value="10,2" />
+            </Style>
+
         </ResourceDictionary>
     </Application.Resources>
 </Application>

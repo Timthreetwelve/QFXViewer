@@ -34,3 +34,5 @@ global using NLog.Config;
 global using NLog.Targets;
 
 global using QFXparser;
+
+global using QFXViewer.Dialogs;

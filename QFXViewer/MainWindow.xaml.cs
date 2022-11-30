@@ -1,5 +1,7 @@
 ﻿// Copyright (c) Tim Kennedy. All Rights Reserved. Licensed under the MIT License.
 
+using FileHashes;
+
 namespace QFXViewer;
 
 /// <summary>
@@ -257,7 +259,7 @@ public partial class MainWindow : Window
 
     private void MnuSettings_Click(object sender, RoutedEventArgs e)
     {
-
+        DialogHelpers.ShowSettingsDialog();
     }
 
     private void BtnViewQfx_Click(object sender, RoutedEventArgs e)
@@ -273,7 +275,7 @@ public partial class MainWindow : Window
 
     private void MnuAbout_Click(object sender, RoutedEventArgs e)
     {
-
+        DialogHelpers.ShowAboutDialog();
     }
 
     private void Window_KeyDown(object sender, KeyEventArgs e)
