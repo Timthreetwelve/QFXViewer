@@ -35,7 +35,7 @@
         </Grid.RowDefinitions>
         <!--#endregion-->
 
-        <!--#region DockPanel with menu-->
+        <!--#region DockPanel with Menu-->
         <DockPanel Grid.Row="0" LastChildFill="True">
             <Menu Height="32"
                   materialDesign:MenuAssist.TopLevelMenuItemHeight="32"
@@ -60,11 +60,13 @@
         <!--#region Top card - filename and buttons-->
         <materialDesign:Card Grid.Row="1" Margin="10">
             <Grid>
+                <!--#region Column definitions -->
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition />
                     <ColumnDefinition />
                     <ColumnDefinition Width="90" />
                 </Grid.ColumnDefinitions>
+                <!--#endregion-->
 
                 <StackPanel Grid.Column="0" Margin="10"
                             Orientation="Horizontal">
@@ -82,7 +84,7 @@
                             Style="{StaticResource MaterialDesignFlatButton}"
                             ToolTip="View Current QFX File">
                         <materialDesign:PackIcon Width="24" Height="24"
-                                                 Kind="Glasses" />
+                                                 Kind="FileCodeOutline" />
                     </Button>
 
                     <Button Width="40" Padding="0"
@@ -94,7 +96,7 @@
                             Style="{StaticResource MaterialDesignFlatButton}"
                             ToolTip="Open QFX File">
                         <materialDesign:PackIcon Width="24" Height="24"
-                                                 Kind="FileDocumentOutline" />
+                                                 Kind="FolderFileOutline" />
                     </Button>
                 </StackPanel>
             </Grid>
@@ -104,27 +106,33 @@
         <!--#region Second card - bank & account info-->
         <materialDesign:Card Grid.Row="2" Margin="10,5">
             <Grid>
+                <!--#region Column definitions -->
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
+                <!--#endregion-->
+
                 <StackPanel Grid.Column="0" Margin="10,10,30,10"
                             Orientation="Horizontal">
                     <TextBlock Text="Financial Institution:  " />
                     <TextBlock Text="{Binding OrgName, Source={x:Static local:FinInfo.Info}}" />
                 </StackPanel>
+
                 <StackPanel Grid.Column="1" Margin="30,10"
                             Orientation="Horizontal">
                     <TextBlock Text="Account Type:  " />
                     <TextBlock Text="{Binding AcctType, Source={x:Static local:FinInfo.Info}}" />
                 </StackPanel>
+
                 <StackPanel Grid.Column="2" Margin="30,10"
                             Orientation="Horizontal">
                     <TextBlock Text="Account Number:  " />
                     <TextBlock Text="{Binding AcctNum, Source={x:Static local:FinInfo.Info}}" />
                 </StackPanel>
+
                 <StackPanel Grid.Column="3" Margin="30,10"
                             Orientation="Horizontal">
                     <TextBlock Text="Balance:  " />
@@ -134,7 +142,6 @@
                         <Run Text="{Binding BalanceAsOf, Source={x:Static local:FinInfo.Info}, StringFormat=d}" />
                     </TextBlock>
                 </StackPanel>
-
             </Grid>
         </materialDesign:Card>
         <!--#endregion-->
