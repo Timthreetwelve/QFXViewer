@@ -13,6 +13,14 @@
                 <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Defaults.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.PopupBox.xaml" />
             </ResourceDictionary.MergedDictionaries>
+
+            <!--  Style to alight text boxes in a datagrid right  -->
+            <Style TargetType="TextBlock"
+                   x:Key="alignRight"
+                   BasedOn="{StaticResource {x:Type TextBlock}}">
+                <Setter Property="HorizontalAlignment" Value="Right" />
+            </Style>
+
         </ResourceDictionary>
     </Application.Resources>
 </Application>

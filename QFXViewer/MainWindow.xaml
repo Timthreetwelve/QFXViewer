@@ -5,12 +5,14 @@
         xmlns:local="clr-namespace:QFXViewer"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d" Title="MDIX Starter"
-        Width="400" Height="400"
-        Activated="Window_Activated"
-        Closing="Window_Closing" FontSize="12"
-        Style="{StaticResource MaterialDesignWindow}"
+        mc:Ignorable="d"
         Background="{DynamicResource MaterialDesignPaper}"
+        Closing="Window_Closing"
+        FontFamily="Segoe UI"
+        KeyDown="Window_KeyDown"
+        Loaded="Window_Loaded"
+        Style="{StaticResource MaterialDesignWindow}"
+        TextElement.FontSize="12"
         TextElement.FontWeight="Regular"
         TextElement.Foreground="{DynamicResource MaterialDesignBody}"
         TextOptions.TextFormattingMode="Ideal"
@@ -20,16 +22,162 @@
     <Grid x:Name="MainGrid">
         <!--#region Row definitions-->
         <Grid.RowDefinitions>
+            <!--  Menu  -->
             <RowDefinition Height="Auto" />
+            <!--  Top card  -->
+            <RowDefinition Height="Auto" />
+            <!--  2nd card  -->
+            <RowDefinition Height="Auto" />
+            <!--  Datagrid  -->
             <RowDefinition Height="*" />
-            <RowDefinition Height="Auto" />
+            <!--  Bottom row  -->
+            <RowDefinition Height="10" />
         </Grid.RowDefinitions>
         <!--#endregion-->
 
-        <TextBlock Grid.Row="1" Margin="20"
-                   HorizontalAlignment="Center"
-                   VerticalAlignment="Center" FontSize="24"
-                   Text="MDIX Starter" />
+        <!--#region DockPanel with menu-->
+        <DockPanel Grid.Row="0" LastChildFill="True">
+            <Menu Height="32"
+                  materialDesign:MenuAssist.TopLevelMenuItemHeight="32"
+                  DockPanel.Dock="Top"
+                  FontFamily="Segoe UI" FontSize="12">
+                <MenuItem Header="_File">
+                    <MenuItem Click="FileOpen_Click"
+                              Header="_Open a QFX File" />
+                    <Separator />
+                    <MenuItem Click="Exit_Click" Header="E_xit" />
+                </MenuItem>
+                <MenuItem Click="MnuSettings_Click"
+                          Header="_Settings" />
+                <MenuItem Header="_Help">
+                    <MenuItem Header="_Read Me" />
+                    <MenuItem Click="MnuAbout_Click" Header="_About" />
+                </MenuItem>
+            </Menu>
+        </DockPanel>
+        <!--#endregion-->
 
+        <!--#region Top card - filename and buttons-->
+        <materialDesign:Card Grid.Row="1" Margin="10">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                    <ColumnDefinition Width="90" />
+                </Grid.ColumnDefinitions>
+
+                <StackPanel Grid.Column="0" Margin="10"
+                            Orientation="Horizontal">
+                    <TextBlock Margin="0,0,10,0" Text="Current File:" />
+                    <TextBlock x:Name="tbFileName" />
+                </StackPanel>
+
+                <StackPanel Grid.Column="2" Orientation="Horizontal">
+                    <Button Width="40" Padding="0"
+                            HorizontalAlignment="Left"
+                            Click="BtnViewQfx_Click"
+                            Foreground="{Binding ElementName=tbFileName,
+                                                 Path=Foreground}"
+                            IsDefault="False" IsTabStop="False"
+                            Style="{StaticResource MaterialDesignFlatButton}"
+                            ToolTip="View Current QFX File">
+                        <materialDesign:PackIcon Width="24" Height="24"
+                                                 Kind="Glasses" />
+                    </Button>
+
+                    <Button Width="40" Padding="0"
+                            HorizontalAlignment="Right"
+                            Click="FileOpen_Click"
+                            Foreground="{Binding ElementName=tbFileName,
+                                                 Path=Foreground}"
+                            IsDefault="False" IsTabStop="False"
+                            Style="{StaticResource MaterialDesignFlatButton}"
+                            ToolTip="Open QFX File">
+                        <materialDesign:PackIcon Width="24" Height="24"
+                                                 Kind="FileDocumentOutline" />
+                    </Button>
+                </StackPanel>
+            </Grid>
+        </materialDesign:Card>
+        <!--#endregion-->
+
+        <!--#region Second card - bank & account info-->
+        <materialDesign:Card Grid.Row="2" Margin="10,5">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <StackPanel Grid.Column="0" Margin="10,10,30,10"
+                            Orientation="Horizontal">
+                    <TextBlock Text="Financial Institution:  " />
+                    <TextBlock Text="{Binding OrgName, Source={x:Static local:FinInfo.Info}}" />
+                </StackPanel>
+                <StackPanel Grid.Column="1" Margin="30,10"
+                            Orientation="Horizontal">
+                    <TextBlock Text="Account Type:  " />
+                    <TextBlock Text="{Binding AcctType, Source={x:Static local:FinInfo.Info}}" />
+                </StackPanel>
+                <StackPanel Grid.Column="2" Margin="30,10"
+                            Orientation="Horizontal">
+                    <TextBlock Text="Account Number:  " />
+                    <TextBlock Text="{Binding AcctNum, Source={x:Static local:FinInfo.Info}}" />
+                </StackPanel>
+                <StackPanel Grid.Column="3" Margin="30,10"
+                            Orientation="Horizontal">
+                    <TextBlock Text="Balance:  " />
+                    <TextBlock>
+                        <Run Text="{Binding Balance, Source={x:Static local:FinInfo.Info}, StringFormat=C}" />
+                        <Run Text=" as of " />
+                        <Run Text="{Binding BalanceAsOf, Source={x:Static local:FinInfo.Info}, StringFormat=d}" />
+                    </TextBlock>
+                </StackPanel>
+
+            </Grid>
+        </materialDesign:Card>
+        <!--#endregion-->
+
+        <!--#region DataGrid-->
+        <materialDesign:Card Grid.Row="3" Margin="10,5,10,0">
+            <DataGrid x:Name="TheDataGrid"
+                      Padding="3,0"
+                      d:ItemsSource="{d:SampleData ItemCount=5}"
+                      AutoGenerateColumns="False"
+                      Background="{DynamicResource MaterialDesignCardBackground}"
+                      BorderBrush="{DynamicResource MaterialDesignDivider}"
+                      BorderThickness="1.25" FontSize="12"
+                      HeadersVisibility="Column"
+                      IsReadOnly="True"
+                      ScrollViewer.CanContentScroll="True"
+                      ScrollViewer.HorizontalScrollBarVisibility="Auto"
+                      ScrollViewer.VerticalScrollBarVisibility="Auto">
+                <DataGrid.Resources>
+                    <Style TargetType="ScrollBar"
+                           BasedOn="{StaticResource MaterialDesignScrollBarMinimal}" />
+                </DataGrid.Resources>
+                <DataGrid.Columns>
+                    <DataGridTextColumn Binding="{Binding PostedOn, StringFormat='MM/dd/yyyy'}"
+                                        ElementStyle="{StaticResource alignRight}"
+                                        Header="Date" />
+                    <DataGridTextColumn Binding="{Binding Amount, StringFormat=C}"
+                                        ElementStyle="{StaticResource alignRight}"
+                                        Header="Amount" />
+                    <DataGridTextColumn Binding="{Binding Name}"
+                                        Header="Name" />
+                    <DataGridTextColumn Binding="{Binding Memo}"
+                                        Header="Memo" />
+                    <DataGridTextColumn Binding="{Binding Type}"
+                                        Header="Type" />
+                    <DataGridTextColumn Binding="{Binding TransactionId}"
+                                        Header="Trans ID" />
+                    <DataGridTextColumn Binding="{Binding RefNumber}"
+                                        Header="Ref Number" />
+                </DataGrid.Columns>
+            </DataGrid>
+        </materialDesign:Card>
+        <!--#endregion-->
     </Grid>
 </Window>
+

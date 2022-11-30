@@ -1,8 +1,7 @@
 ﻿// Copyright (c) Tim Kennedy. All Rights Reserved. Licensed under the MIT License.
 
-using System.Security.Principal;
-
 namespace QFXViewer;
+
 /// <summary>
 /// Interaction logic for MainWindow.xaml
 /// </summary>
@@ -23,6 +22,26 @@ public partial class MainWindow : Window
         InitializeComponent();
 
         ReadSettings();
+
+        ProcessCommandLine();
+
+    }
+
+    private void ProcessCommandLine()
+    {
+        string[] clArgs = Environment.GetCommandLineArgs();
+
+        if (clArgs?.Length > 1 && File.Exists(clArgs[1]))
+        {
+            log.Debug($"File was found: {clArgs[1]}");
+            FileInfo file = new(clArgs[1]);
+            if (string.Equals(file.Extension, ".qfx", StringComparison.OrdinalIgnoreCase))
+            {
+                log.Debug($"File has correct extension: {file.Extension}");
+
+                ProcessQfxFile(file.FullName);
+            }
+        }
     }
 
     #region Settings
@@ -62,6 +81,12 @@ public partial class MainWindow : Window
         // Window position
         UserSettings.Setting.SetWindowPos();
         Topmost = UserSettings.Setting.KeepOnTop;
+
+        //
+        MainWindowUIHelpers.SetBaseTheme((ThemeType)UserSettings.Setting.DarkMode);
+
+        //
+        MainWindowUIHelpers.SetPrimaryColor((AccentColor)UserSettings.Setting.PrimaryColor);
 
         // Settings change event
         UserSettings.Setting.PropertyChanged += UserSettingChanged;
@@ -106,10 +131,10 @@ public partial class MainWindow : Window
     #endregion Setting change
 
     #region Window Events
-    private void Window_Activated(object sender, EventArgs e)
+    private void Window_Loaded(object sender, RoutedEventArgs e)
     {
-        // window activated stuff here
     }
+
 
     private void Window_Closing(object sender, CancelEventArgs e)
     {
@@ -178,4 +203,131 @@ public partial class MainWindow : Window
             MessageBoxImage.Error);
     }
     #endregion Unhandled Exception Handler
+
+    private void ProcessQfxFile(string qfxFile)
+    {
+        if (FinInfo.CheckQfxFile(qfxFile))
+        {
+            FinInfo.GetFinInfo();
+            FileParser parser = new(qfxFile);
+            Statement x = parser.BuildStatement();
+            FinInfo.Info.Balance = x.LedgerBalance.Amount;
+            FinInfo.Info.BalanceAsOf = x.LedgerBalance.AsOf;
+            TheDataGrid.ItemsSource = x.Transactions;
+            tbFileName.Text = qfxFile;
+        }
+        else
+        {
+            FinInfo.Info.AcctNum = null;
+            FinInfo.Info.AcctType = null;
+            FinInfo.Info.Balance = 0;
+            FinInfo.Info.BalanceAsOf = default;
+            TheDataGrid.ItemsSource = null;
+            tbFileName.Text = string.Empty;
+            _ = MessageBox.Show(
+            "QFX file was not found, is invalid or empty.",
+            "Error",
+            MessageBoxButton.OK,
+            MessageBoxImage.Error);
+        }
+    }
+
+    private void Exit_Click(object sender, RoutedEventArgs e)
+    {
+        Close();
+    }
+
+    private void FileOpen_Click(object sender, RoutedEventArgs e)
+    {
+        OpenFileDialog dlgOpen = new()
+        {
+            Title = "Enter File Name",
+            CheckFileExists = true,
+            CheckPathExists = true,
+            Filter = "QFX files (*.qfx)|*.qfx"
+        };
+        if (dlgOpen.ShowDialog() == true)
+        {
+            ProcessQfxFile(dlgOpen.FileName);
+        }
+    }
+
+    private void MnuSettings_Click(object sender, RoutedEventArgs e)
+    {
+
+    }
+
+    private void BtnViewQfx_Click(object sender, RoutedEventArgs e)
+    {
+        //TextFileViewer.ViewTextFile();
+    }
+
+    private void MnuAbout_Click(object sender, RoutedEventArgs e)
+    {
+
+    }
+
+    private void Window_KeyDown(object sender, KeyEventArgs e)
+    {
+        // CTRL key combos
+        if (e.KeyboardDevice.Modifiers == ModifierKeys.Control)
+        {
+            if (e.Key == Key.M)
+            {
+                switch (UserSettings.Setting.DarkMode)
+                {
+                    case (int)ThemeType.Light:
+                        UserSettings.Setting.DarkMode = (int)ThemeType.Dark;
+                        break;
+                    case (int)ThemeType.Dark:
+                        UserSettings.Setting.DarkMode = (int)ThemeType.Darker;
+                        break;
+                    case (int)ThemeType.Darker:
+                        UserSettings.Setting.DarkMode = (int)ThemeType.System;
+                        break;
+                    case (int)ThemeType.System:
+                        UserSettings.Setting.DarkMode = (int)ThemeType.Light;
+                        break;
+                }
+            }
+            if (e.Key == Key.N)
+            {
+                if (UserSettings.Setting.PrimaryColor >= (int)AccentColor.BlueGray)
+                {
+                    UserSettings.Setting.PrimaryColor = 0;
+                }
+                else
+                {
+                    UserSettings.Setting.PrimaryColor++;
+                }
+            }
+        }
+
+        // Ctrl and Shift
+        if (e.KeyboardDevice.Modifiers == (ModifierKeys.Control | ModifierKeys.Shift))
+        {
+            if (e.Key == Key.N)
+            {
+                if (UserSettings.Setting.PrimaryColor == 0)
+                {
+                    UserSettings.Setting.PrimaryColor = 18;
+                }
+                else
+                {
+                    UserSettings.Setting.PrimaryColor--;
+                }
+                if (e.Key == Key.R)
+                {
+                    string readme = Path.Combine(AppInfo.AppDirectory, "ReadMe.txt");
+                    TextFileViewer.ViewTextFile(readme);
+                }
+            }
+
+            // No CTRL or Shift key
+            if (e.Key == Key.F1)
+            {
+
+            }
+        }
+    }
 }

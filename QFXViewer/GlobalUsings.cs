@@ -2,11 +2,6 @@
 
 // Like it says on the tin, this is a global using file
 
-global using MaterialDesignColors;
-global using MaterialDesignThemes.Wpf;
-global using NLog;
-global using NLog.Config;
-global using NLog.Targets;
 global using System;
 global using System.Collections.Generic;
 global using System.Collections.ObjectModel;
@@ -28,3 +23,14 @@ global using System.Windows.Data;
 global using System.Windows.Input;
 global using System.Windows.Media;
 global using System.Windows.Navigation;
+
+global using Microsoft.Win32;
+
+global using MaterialDesignColors;
+global using MaterialDesignThemes.Wpf;
+
+global using NLog;
+global using NLog.Config;
+global using NLog.Targets;
+
+global using QFXparser;
