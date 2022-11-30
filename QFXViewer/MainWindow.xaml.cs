@@ -1,7 +1,5 @@
 ﻿// Copyright (c) Tim Kennedy. All Rights Reserved. Licensed under the MIT License.
 
-using FileHashes;
-
 namespace QFXViewer;
 
 /// <summary>
@@ -208,6 +206,7 @@ public partial class MainWindow : Window
     }
     #endregion Command line
 
+    #region Process the QFX file
     private void ProcessQfxFile(string qfxFile)
     {
         if (FinInfo.CheckQfxFile(qfxFile))
@@ -235,7 +234,9 @@ public partial class MainWindow : Window
             MessageBoxImage.Error);
         }
     }
+    #endregion Process the QFX file
 
+    #region Menu and Button events
     private void Exit_Click(object sender, RoutedEventArgs e)
     {
         Close();
@@ -294,9 +295,30 @@ public partial class MainWindow : Window
         }
     }
 
+    private void MnuReadMe_Click(object sender, RoutedEventArgs e)
+    {
+        string readme = Path.Combine(AppInfo.AppDirectory, "ReadMe.txt");
+        TextFileViewer.ViewTextFile(readme);
+    }
+    #endregion
+
+    #region Keyboard Events
     private void Window_KeyDown(object sender, KeyEventArgs e)
     {
         // CTRL key combos
+        if (e.Key == Key.OemComma)
+        {
+            if (!DialogHost.IsDialogOpen("MainDialogHost"))
+            {
+                DialogHelpers.ShowSettingsDialog();
+            }
+            else
+            {
+                DialogHost.Close("MainDialogHost");
+                DialogHelpers.ShowSettingsDialog();
+            }
+        }
+
         if (e.KeyboardDevice.Modifiers == ModifierKeys.Control)
         {
             if (e.Key == Key.M)
@@ -317,6 +339,7 @@ public partial class MainWindow : Window
                         break;
                 }
             }
+
             if (e.Key == Key.N)
             {
                 if (UserSettings.Setting.PrimaryColor >= (int)AccentColor.BlueGray)
@@ -326,27 +349,6 @@ public partial class MainWindow : Window
                 else
                 {
                     UserSettings.Setting.PrimaryColor++;
-                }
-            }
-        }
-
-        // Ctrl and Shift
-        if (e.KeyboardDevice.Modifiers == (ModifierKeys.Control | ModifierKeys.Shift))
-        {
-            if (e.Key == Key.N)
-            {
-                if (UserSettings.Setting.PrimaryColor == 0)
-                {
-                    UserSettings.Setting.PrimaryColor = 18;
-                }
-                else
-                {
-                    UserSettings.Setting.PrimaryColor--;
-                }
-                if (e.Key == Key.R)
-                {
-                    string readme = Path.Combine(AppInfo.AppDirectory, "ReadMe.txt");
-                    TextFileViewer.ViewTextFile(readme);
                 }
             }
         }
@@ -365,10 +367,5 @@ public partial class MainWindow : Window
             }
         }
     }
-
-    private void MnuReadMe_Click(object sender, RoutedEventArgs e)
-    {
-        string readme = Path.Combine(AppInfo.AppDirectory, "ReadMe.txt");
-        TextFileViewer.ViewTextFile(readme);
-    }
+    #endregion
 }
