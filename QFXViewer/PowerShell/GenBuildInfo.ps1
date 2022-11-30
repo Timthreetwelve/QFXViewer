@@ -40,7 +40,8 @@ namespace $assemblyName
     }
 }"
 
-Set-Content -Path $outputFile -Value $class
+$curPath = Get-Location
+$outputPath = Join-Path -Path $curPath.Path -ChildPath $outputFile
 
-$fullName = Get-Item $outputFile
-Write-Host "GenBuildInfo: Output written to $fullName"
+Write-Host "GenBuildInfo: Output written to $outputPath"
+Set-Content -Path "$outputPath" -Value $class
