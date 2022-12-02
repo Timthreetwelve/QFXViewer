@@ -2,14 +2,18 @@
 
 namespace QFXViewer;
 
+/// <summary>
+/// Class used to provide additional properties and methods.
+/// </summary>
+/// <seealso cref="System.ComponentModel.INotifyPropertyChanged" />
 internal class FinInfo : INotifyPropertyChanged
 {
     private static IEnumerable<string> qfxLines;
+    private static readonly Logger log = LogManager.GetLogger("logTemp");
 
     public static FinInfo Info { get; } = new FinInfo();
 
     #region Properties
-
     public string AcctType
     {
         get
@@ -49,7 +53,6 @@ internal class FinInfo : INotifyPropertyChanged
         }
     }
 
-
     public decimal Balance
     {
         get => balance;
@@ -69,6 +72,16 @@ internal class FinInfo : INotifyPropertyChanged
             OnPropertyChanged();
         }
     }
+
+    public string QFXFileName
+    {
+        get => qfxFileName ?? "n/a";
+        set
+        {
+            qfxFileName = value;
+            OnPropertyChanged();
+        }
+    }
     #endregion Properties
 
     #region Private backing fields
@@ -77,24 +90,31 @@ internal class FinInfo : INotifyPropertyChanged
     private decimal balance;
     private DateTime balanceAsOf;
     private string orgName;
+    private string qfxFileName;
     #endregion Private backing fields
 
-    #region Handle property change event
+    #region Property change event
     public event PropertyChangedEventHandler PropertyChanged;
 
     protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
     {
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
-    #endregion Handle property change event
+    #endregion Property change event
 
     #region Methods
+    /// <summary>
+    /// Checks the QFX file.
+    /// </summary>
+    /// <param name="qfxFile">The QFX file.</param>
+    /// <returns>True if file is found and has an OFX tag and either a STMTTRNRS tag or a CCSTMTTRNRS tag.</returns>
     public static bool CheckQfxFile(string qfxFile)
     {
         bool stmtFound = false;
 
         if (!File.Exists(qfxFile))
         {
+            log.Error($"File not found: {qfxFile}");
             return false;
         }
 
@@ -102,6 +122,7 @@ internal class FinInfo : INotifyPropertyChanged
 
         if (!qfxLines.Any(x => x.Contains("<OFX>")))
         {
+            log.Error($"{qfxFile} <OFX> tag not found.");
             return false;
         }
 
@@ -117,10 +138,13 @@ internal class FinInfo : INotifyPropertyChanged
 
         return stmtFound;
     }
+
+    /// <summary>
+    /// Gets addition information from the QFX file that QFXParser doesn't provide.
+    /// </summary>
     public static void GetFinInfo()
     {
         TextInfo textInfo = new CultureInfo("en-US").TextInfo;
-
 
         foreach (string line in qfxLines)
         {

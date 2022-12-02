@@ -5,18 +5,24 @@
         xmlns:local="clr-namespace:QFXViewer"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d"
+        mc:Ignorable="d" AllowDrop="True"
         Background="{DynamicResource MaterialDesignPaper}"
         Closing="Window_Closing"
         FontFamily="Segoe UI"
         KeyDown="Window_KeyDown"
         Loaded="Window_Loaded"
+        PreviewDragOver="Window_PreviewDragOver"
+        PreviewDrop="Window_PreviewDrop"
         Style="{StaticResource MaterialDesignWindow}"
         TextElement.FontSize="12"
         TextElement.FontWeight="Regular"
         TextElement.Foreground="{DynamicResource MaterialDesignBody}"
         TextOptions.TextFormattingMode="Ideal"
         TextOptions.TextRenderingMode="Auto">
+
+    <Window.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolVisConverter" />
+    </Window.Resources>
 
     <materialDesign:DialogHost CloseOnClickAway="False"
                                DialogTheme="Inherit"
@@ -53,8 +59,12 @@
                               Header="_Settings" />
                     <MenuItem Header="_Help">
                         <MenuItem Click="MnuReadMe_Click"
-                                  Header="_Read Me" />
-                        <MenuItem Click="MnuAbout_Click" Header="_About" />
+                                  Header="View _Read Me" />
+                        <MenuItem Click="MnuLogFile_Click"
+                                  Header="View Log File" />
+                        <Separator />
+                        <MenuItem Click="MnuAbout_Click"
+                                  Header="_About QFX Viewer" />
                     </MenuItem>
                 </Menu>
             </DockPanel>
@@ -74,15 +84,14 @@
                     <StackPanel Grid.Column="0" Margin="10"
                                 Orientation="Horizontal">
                         <TextBlock Margin="0,0,10,0" Text="Current File:" />
-                        <TextBlock x:Name="tbFileName" />
+                        <TextBlock Text="{Binding QFXFileName, Source={x:Static local:FinInfo.Info}}" />
                     </StackPanel>
 
                     <StackPanel Grid.Column="2" Orientation="Horizontal">
                         <Button Width="40" Padding="0"
                                 HorizontalAlignment="Left"
                                 Click="BtnViewQfx_Click"
-                                Foreground="{Binding ElementName=tbFileName,
-                                                     Path=Foreground}"
+                                Foreground="{DynamicResource MaterialDesignBody}"
                                 IsDefault="False" IsTabStop="False"
                                 Style="{StaticResource MaterialDesignFlatButton}"
                                 ToolTip="View Current QFX File">
@@ -93,8 +102,7 @@
                         <Button Width="40" Padding="0"
                                 HorizontalAlignment="Right"
                                 Click="FileOpen_Click"
-                                Foreground="{Binding ElementName=tbFileName,
-                                                     Path=Foreground}"
+                                Foreground="{DynamicResource MaterialDesignBody}"
                                 IsDefault="False" IsTabStop="False"
                                 Style="{StaticResource MaterialDesignFlatButton}"
                                 ToolTip="Open QFX File">
@@ -157,7 +165,7 @@
                           AutoGenerateColumns="False"
                           Background="{DynamicResource MaterialDesignCardBackground}"
                           BorderBrush="{DynamicResource MaterialDesignDivider}"
-                          BorderThickness="1.25" FontSize="12"
+                          BorderThickness="2" FontSize="12"
                           HeadersVisibility="Column"
                           IsReadOnly="True"
                           ScrollViewer.CanContentScroll="True"
@@ -167,23 +175,41 @@
                         <Style TargetType="ScrollBar"
                                BasedOn="{StaticResource MaterialDesignScrollBarMinimal}" />
                     </DataGrid.Resources>
+                    <DataGrid.CellStyle>
+                        <Style TargetType="DataGridCell"
+                               BasedOn="{StaticResource {x:Type DataGridCell}}">
+                            <Setter Property="Focusable" Value="False" />
+                        </Style>
+                    </DataGrid.CellStyle>
                     <DataGrid.Columns>
                         <DataGridTextColumn Binding="{Binding PostedOn, StringFormat='MM/dd/yyyy'}"
                                             ElementStyle="{StaticResource alignRight}"
-                                            Header="Date" />
+                                            Header="Posted On" />
                         <DataGridTextColumn Binding="{Binding Amount, StringFormat=C}"
                                             ElementStyle="{StaticResource alignRight}"
                                             Header="Amount" />
                         <DataGridTextColumn Binding="{Binding Name}"
                                             Header="Name" />
                         <DataGridTextColumn Binding="{Binding Memo}"
-                                            Header="Memo" />
+                                            Header="Memo"
+                                            Visibility="{Binding ShowMemoCol,
+                                                                 Source={x:Static local:UserSettings.Setting},
+                                                                 Converter={StaticResource BoolVisConverter}}" />
                         <DataGridTextColumn Binding="{Binding Type}"
-                                            Header="Type" />
+                                            Header="Type"
+                                            Visibility="{Binding ShowTypeCol,
+                                                                 Source={x:Static local:UserSettings.Setting},
+                                                                 Converter={StaticResource BoolVisConverter}}" />
                         <DataGridTextColumn Binding="{Binding TransactionId}"
-                                            Header="Trans ID" />
+                                            Header="Trans ID"
+                                            Visibility="{Binding ShowTransCol,
+                                                                 Source={x:Static local:UserSettings.Setting},
+                                                                 Converter={StaticResource BoolVisConverter}}" />
                         <DataGridTextColumn Binding="{Binding RefNumber}"
-                                            Header="Ref Number" />
+                                            Header="Ref Number"
+                                            Visibility="{Binding ShowRefCol,
+                                                                 Source={x:Static local:UserSettings.Setting},
+                                                                 Converter={StaticResource BoolVisConverter}}" />
                     </DataGrid.Columns>
                 </DataGrid>
             </materialDesign:Card>

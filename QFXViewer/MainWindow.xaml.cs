@@ -7,8 +7,6 @@ namespace QFXViewer;
 /// </summary>
 public partial class MainWindow : Window
 {
-    private string qfxFileName;
-
     #region Stopwatch
     private readonly Stopwatch stopwatch = new();
     #endregion Stopwatch
@@ -66,11 +64,14 @@ public partial class MainWindow : Window
         UserSettings.Setting.SetWindowPos();
         Topmost = UserSettings.Setting.KeepOnTop;
 
-        //
+        // Set theme
         MainWindowUIHelpers.SetBaseTheme((ThemeType)UserSettings.Setting.DarkMode);
 
-        //
+        // Set primary accent color
         MainWindowUIHelpers.SetPrimaryColor((AccentColor)UserSettings.Setting.PrimaryColor);
+
+        // Set UI size
+        MainWindowUIHelpers.UIScale((MySize)UserSettings.Setting.UISize);
 
         // Settings change event
         UserSettings.Setting.PropertyChanged += UserSettingChanged;
@@ -188,6 +189,9 @@ public partial class MainWindow : Window
     #endregion Unhandled Exception Handler
 
     #region Command line
+    /// <summary>
+    /// Processes the command line.
+    /// </summary>
     private void ProcessCommandLine()
     {
         string[] clArgs = Environment.GetCommandLineArgs();
@@ -198,41 +202,65 @@ public partial class MainWindow : Window
             FileInfo file = new(clArgs[1]);
             if (string.Equals(file.Extension, ".qfx", StringComparison.OrdinalIgnoreCase))
             {
-                log.Debug($"File has correct extension: {file.Extension}");
-                qfxFileName= file.FullName;
+                log.Info($"File {file.FullName} was specified on the command line.");
+                FinInfo.Info.QFXFileName = file.FullName;
                 ProcessQfxFile(file.FullName);
             }
+        }
+        if (clArgs?.Length > 1 && !File.Exists(clArgs[1]))
+        {
+            log.Warn($"\"{clArgs[1]}\" was specified on the command line but a file with that name couold not be found.");
         }
     }
     #endregion Command line
 
     #region Process the QFX file
+    /// <summary>
+    /// Checks, processes and displays the QFX file.
+    /// </summary>
+    /// <param name="qfxFile">The QFX file.</param>
     private void ProcessQfxFile(string qfxFile)
     {
         if (FinInfo.CheckQfxFile(qfxFile))
         {
-            FinInfo.GetFinInfo();
-            FileParser parser = new(qfxFile);
-            Statement x = parser.BuildStatement();
-            FinInfo.Info.Balance = x.LedgerBalance.Amount;
-            FinInfo.Info.BalanceAsOf = x.LedgerBalance.AsOf;
-            TheDataGrid.ItemsSource = x.Transactions;
-            tbFileName.Text = qfxFile;
+            try
+            {
+                FinInfo.GetFinInfo();
+                FileParser parser = new(qfxFile);
+                Statement x = parser.BuildStatement();
+                FinInfo.Info.Balance = x.LedgerBalance.Amount;
+                FinInfo.Info.BalanceAsOf = x.LedgerBalance.AsOf;
+                TheDataGrid.ItemsSource = x.Transactions;
+                log.Info($"Found {x.Transactions.Count} transaction in {qfxFile}");
+            }
+            catch (Exception ex)
+            {
+                ErrorEncountered(qfxFile, ex);
+            }
         }
         else
         {
-            FinInfo.Info.AcctNum = null;
-            FinInfo.Info.AcctType = null;
-            FinInfo.Info.Balance = 0;
-            FinInfo.Info.BalanceAsOf = default;
-            TheDataGrid.ItemsSource = null;
-            tbFileName.Text = string.Empty;
-            _ = MessageBox.Show(
-            "QFX file was not found, is invalid or empty.",
-            "Error",
-            MessageBoxButton.OK,
-            MessageBoxImage.Error);
+            ErrorEncountered(qfxFile, null);
         }
+    }
+
+    /// <summary>
+    /// Handles errors encountered while processing the QFX file.
+    /// </summary>
+    /// <param name="filename">The QFX filename.</param>
+    /// <param name="ex">The exception.</param>
+    private void ErrorEncountered(string filename, Exception ex)
+    {
+        FinInfo.Info.AcctNum = null;
+        FinInfo.Info.AcctType = null;
+        FinInfo.Info.Balance = 0;
+        FinInfo.Info.BalanceAsOf = default;
+        TheDataGrid.ItemsSource = null;
+        log.Error(ex, $"Error reading {filename}");
+        _ = MessageBox.Show("QFX file was not found, is invalid or empty.\nSee the log file for more info.",
+                            "Error",
+                            MessageBoxButton.OK,
+                            MessageBoxImage.Error);
     }
     #endregion Process the QFX file
 
@@ -254,7 +282,7 @@ public partial class MainWindow : Window
         if (dlgOpen.ShowDialog() == true)
         {
             ProcessQfxFile(dlgOpen.FileName);
-            qfxFileName= dlgOpen.FileName;
+            FinInfo.Info.QFXFileName = dlgOpen.FileName;
         }
     }
 
@@ -275,11 +303,11 @@ public partial class MainWindow : Window
     {
         using Process p = new();
         p.StartInfo.FileName = "notepad.exe";
-        p.StartInfo.Arguments = qfxFileName;
+        p.StartInfo.Arguments = FinInfo.Info.QFXFileName;
         p.StartInfo.UseShellExecute = true;
         p.StartInfo.ErrorDialog = false;
         _ = p.Start();
-        log.Debug($"Opening {qfxFileName} in Notepad.exe");
+        log.Debug($"Opening {FinInfo.Info.QFXFileName} in Notepad.exe");
     }
 
     private void MnuAbout_Click(object sender, RoutedEventArgs e)
@@ -299,6 +327,12 @@ public partial class MainWindow : Window
     {
         string readme = Path.Combine(AppInfo.AppDirectory, "ReadMe.txt");
         TextFileViewer.ViewTextFile(readme);
+    }
+
+    private void MnuLogFile_Click(object sender, RoutedEventArgs e)
+    {
+        string logFile = NLHelpers.GetLogfileName();
+        TextFileViewer.ViewTextFile(logFile);
     }
     #endregion
 
@@ -366,6 +400,51 @@ public partial class MainWindow : Window
                 DialogHelpers.ShowAboutDialog();
             }
         }
+
+        if (e.Key == Key.Escape)
+        {
+            TheDataGrid.SelectedItem = null;
+        }
     }
     #endregion
+
+    #region Drag & Drop handlers
+    /// <summary>
+    /// Handles the PreviewDragOver event of the Window control.
+    /// </summary>
+    /// <param name="sender">The source of the event.</param>
+    /// <param name="e">The <see cref="DragEventArgs"/> instance containing the event data.</param>
+    private void Window_PreviewDragOver(object sender, DragEventArgs e)
+    {
+        if (e.Data.GetDataPresent(DataFormats.FileDrop))
+        {
+            List<string> dragfiles = ((DataObject)e.Data).GetFileDropList().Cast<string>().ToList();
+            FileInfo fileInfo = new(dragfiles.FirstOrDefault());
+            e.Effects = (dragfiles?.Count == 1 && fileInfo.Extension == ".qfx")
+                ? DragDropEffects.Copy
+                : DragDropEffects.None;
+        }
+        else
+        {
+            e.Effects = DragDropEffects.None;
+        }
+        e.Handled = true;
+    }
+
+    /// <summary>
+    /// Handles the PreviewDrop event of the Window control.
+    /// </summary>
+    /// <param name="sender">The source of the event.</param>
+    /// <param name="e">The <see cref="DragEventArgs"/> instance containing the event data.</param>
+    private void Window_PreviewDrop(object sender, DragEventArgs e)
+    {
+        if (e.Data?.GetDataPresent(DataFormats.FileDrop) == true)
+        {
+            string filename = ((DataObject)e.Data).GetFileDropList().Cast<string>().ToList().FirstOrDefault();
+            log.Debug($"File dropped: {filename}");
+            FinInfo.Info.QFXFileName = filename;
+            ProcessQfxFile(filename);
+        }
+    }
+    #endregion Drag & Drop handlers
 }
