@@ -65,6 +65,46 @@ public class UserSettings : SettingsManager<UserSettings>, INotifyPropertyChange
         }
     }
 
+    public bool ShowMemoCol
+    {
+        get => showMemoCol;
+        set
+        {
+            showMemoCol = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool ShowRefCol
+    {
+        get => showRefCol;
+        set
+        {
+            showRefCol = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool ShowTransCol
+    {
+        get => showTransCol;
+        set
+        {
+            showTransCol = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool ShowTypeCol
+    {
+        get => showTypeCol;
+        set
+        {
+            showTypeCol = value;
+            OnPropertyChanged();
+        }
+    }
+
     public int UISize
     {
         get => uiSize;
@@ -129,15 +169,19 @@ public class UserSettings : SettingsManager<UserSettings>, INotifyPropertyChange
     #endregion Properties
 
     #region Private backing fields
-    private int darkmode;
+    private int darkmode = (int)ThemeType.System;
     private bool includeDebug;
     private bool keepOnTop;
     private int primaryColor = (int)AccentColor.Blue;
+    private bool showMemoCol = true;
+    private bool showRefCol = true;
+    private bool showTransCol = true;
+    private bool showTypeCol = true;
     private int uiSize = (int)MySize.Default;
-    private double windowHeight = 400;
-    private double windowLeft = 100;
-    private double windowTop = 400;
-    private double windowWidth = 400;
+    private double windowHeight = 500;
+    private double windowLeft = 300;
+    private double windowTop = 300;
+    private double windowWidth = 800;
     #endregion Private backing fields
 
     #region Handle property change event
