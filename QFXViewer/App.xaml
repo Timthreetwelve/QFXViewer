@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:local="clr-namespace:QFXViewer"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:system="clr-namespace:System;assembly=mscorlib"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
         <ResourceDictionary>
@@ -22,13 +23,22 @@
             </Style>
 
             <!--  Style for the page headers  -->
-            <Style
-                x:Key="PageHeader"
-                TargetType="TextBlock">
+            <Style TargetType="TextBlock"
+                   x:Key="PageHeader">
                 <Setter Property="FontSize" Value="20" />
                 <Setter Property="FontWeight" Value="DemiBold" />
                 <Setter Property="Padding" Value="10,2" />
             </Style>
+
+            <!--#region Data providers for enums on the settings page-->
+            <ObjectDataProvider x:Key="enumUISize"
+                                MethodName="GetValues"
+                                ObjectType="{x:Type system:Enum}">
+                <ObjectDataProvider.MethodParameters>
+                    <x:Type TypeName="local:MySize" />
+                </ObjectDataProvider.MethodParameters>
+            </ObjectDataProvider>
+            <!--#endregion-->
 
         </ResourceDictionary>
     </Application.Resources>

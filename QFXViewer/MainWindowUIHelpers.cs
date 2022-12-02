@@ -92,18 +92,28 @@ internal static class MainWindowUIHelpers
     /// <summary>
     /// Sets the value for UI scaling
     /// </summary>
-    /// <param name="size">One of 5 values</param>
+    /// <param name="size">One of 7 values</param>
     /// <returns></returns>
     internal static double UIScale(MySize size)
     {
-        return size switch
+        switch (size)
         {
-            MySize.Smallest => 0.85,
-            MySize.Smaller => 0.95,
-            MySize.Default => 1.0,
-            MySize.Larger => 1.05,
-            MySize.Largest => 1.15,
-            _ => 1.0,
-        };
+            case MySize.Smallest:
+                return 0.8;
+            case MySize.Smaller:
+                return 0.9;
+            case MySize.Small:
+                return 0.95;
+            case MySize.Default:
+                return 1.0;
+            case MySize.Large:
+                return 1.05;
+            case MySize.Larger:
+                return 1.1;
+            case MySize.Largest:
+                return 1.2;
+            default:
+                return 1.0;
+        }
     }
 }
