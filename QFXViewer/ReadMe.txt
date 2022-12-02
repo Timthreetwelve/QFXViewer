@@ -1,1 +1,42 @@
-﻿Future ReadMe file
+﻿The QFX Viewer ReadMe file
+
+Introduction
+============
+QFX Viewer is an application used to view QFX files. QFX files are typically download from a bank
+or other financial institution. QFX Viewer makes it easier to read the contents of these files.
+
+
+Notices and License
+===================
+TimVer was written in C# by Tim Kennedy and now requires .Net 6.
+
+TimVer uses the following NuGet packages:
+
+* Material Design in XAML Toolkit https://github.com/MaterialDesignInXAML/MaterialDesignInXamlToolkit
+
+* NLog https://nlog-project.org/
+
+* QFXparser https://github.com/eramella/QFXparser
+
+* GitVersion https://github.com/GitTools/GitVersion
+
+* Inno Setup was used to create the installer. https://jrsoftware.org/isinfo.php
+
+
+MIT License
+Copyright (c) 2019 - 2022 Tim Kennedy
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
+associated documentation files (the "Software"), to deal in the Software without restriction, including
+without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
+sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject
+to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial
+portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT
+LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
