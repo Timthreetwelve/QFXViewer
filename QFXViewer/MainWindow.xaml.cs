@@ -227,11 +227,18 @@ public partial class MainWindow : Window
             {
                 FinInfo.GetFinInfo();
                 FileParser parser = new(qfxFile);
-                Statement x = parser.BuildStatement();
-                FinInfo.Info.Balance = x.LedgerBalance.Amount;
-                FinInfo.Info.BalanceAsOf = x.LedgerBalance.AsOf;
-                TheDataGrid.ItemsSource = x.Transactions;
-                log.Info($"Found {x.Transactions.Count} transaction in {qfxFile}");
+                Statement stmt = parser.BuildStatement();
+                FinInfo.Info.Balance = stmt.LedgerBalance.Amount;
+                FinInfo.Info.BalanceAsOf = stmt.LedgerBalance.AsOf;
+                TheDataGrid.ItemsSource = stmt.Transactions;
+                if (stmt.Transactions.Count == 1)
+                {
+                    log.Info($"Found {stmt.Transactions.Count} transaction in {qfxFile}");
+                }
+                else
+                {
+                    log.Info($"Found {stmt.Transactions.Count} transactions in {qfxFile}");
+                }
             }
             catch (Exception ex)
             {
