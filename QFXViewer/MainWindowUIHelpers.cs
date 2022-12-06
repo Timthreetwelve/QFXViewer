@@ -4,11 +4,12 @@ namespace QFXViewer;
 
 internal static class MainWindowUIHelpers
 {
+    #region Theme
     /// <summary>
     /// Gets the current theme
     /// </summary>
     /// <returns>Dark or Light</returns>
-    internal static string GetSystemTheme()
+    internal static string? GetSystemTheme()
     {
         BaseTheme? sysTheme = Theme.GetSystemTheme();
         return sysTheme != null ? sysTheme.ToString() : string.Empty;
@@ -26,7 +27,7 @@ internal static class MainWindowUIHelpers
 
         if (mode == ThemeType.System)
         {
-            mode = GetSystemTheme().Equals("light") ? ThemeType.Light : ThemeType.Dark;
+            mode = GetSystemTheme()!.Equals("light", StringComparison.Ordinal) ? ThemeType.Light : ThemeType.Dark;
         }
 
         switch (mode)
@@ -52,7 +53,9 @@ internal static class MainWindowUIHelpers
         //Change the app's current theme
         paletteHelper.SetTheme(theme);
     }
+    #endregion Theme
 
+    #region Accent color
     /// <summary>
     /// Sets the MDIX primary accent color
     /// </summary>
@@ -88,7 +91,9 @@ internal static class MainWindowUIHelpers
         theme.SetPrimaryColor(primaryColor);
         paletteHelper.SetTheme(theme);
     }
+    #endregion Accent color
 
+    #region UI size
     /// <summary>
     /// Sets the value for UI scaling
     /// </summary>
@@ -116,4 +121,5 @@ internal static class MainWindowUIHelpers
                 return 1.0;
         }
     }
+    #endregion UI size
 }

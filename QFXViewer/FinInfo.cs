@@ -8,7 +8,7 @@ namespace QFXViewer;
 /// <seealso cref="System.ComponentModel.INotifyPropertyChanged" />
 internal class FinInfo : INotifyPropertyChanged
 {
-    private static IEnumerable<string> qfxLines;
+    private static IEnumerable<string>? qfxLines;
     private static readonly Logger log = LogManager.GetLogger("logTemp");
 
     public static FinInfo Info { get; } = new FinInfo();
@@ -85,18 +85,20 @@ internal class FinInfo : INotifyPropertyChanged
     #endregion Properties
 
     #region Private backing fields
-    private string acctNum;
-    private string acctType;
+    private string? acctNum;
+    private string? acctType;
     private decimal balance;
     private DateTime balanceAsOf;
-    private string orgName;
-    private string qfxFileName;
+    private string? orgName;
+    private string? qfxFileName;
+
     #endregion Private backing fields
 
     #region Property change event
-    public event PropertyChangedEventHandler PropertyChanged;
+    /// <summary>Occurs when a property value changes.</summary>
+    public event PropertyChangedEventHandler? PropertyChanged;
 
-    protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
+    protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
     {
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
@@ -146,27 +148,30 @@ internal class FinInfo : INotifyPropertyChanged
     {
         TextInfo textInfo = new CultureInfo("en-US").TextInfo;
 
-        foreach (string line in qfxLines)
+        if (qfxLines != null)
         {
-            if (line.Contains("<ACCTTYPE>"))
+            foreach (string line in qfxLines)
             {
-                int pos = line.IndexOf("<ACCTTYPE>");
-                Info.AcctType = textInfo.ToTitleCase(line[(pos + 10)..].ToLower());
-            }
-            else if (line.Contains("<CCSTMTTRNRS>"))
-            {
-                Info.AcctType = "Credit Card";
-            }
-            else if (line.Contains("<ORG>"))
-            {
-                int pos = (int)line.IndexOf("<ORG>");
-                Info.OrgName = line[(pos + 5)..];
-            }
-            else if (line.Contains("<ACCTID>"))
-            {
-                int pos = (int)line.IndexOf("<ACCTID>");
-                string temp = line[(pos + 8)..];
-                Info.AcctNum = StringHelpers.FormatAcctNumber(temp);
+                if (line.Contains("<ACCTTYPE>"))
+                {
+                    int pos = line.IndexOf("<ACCTTYPE>");
+                    Info.AcctType = textInfo.ToTitleCase(line[(pos + 10)..].ToLower());
+                }
+                else if (line.Contains("<CCSTMTTRNRS>"))
+                {
+                    Info.AcctType = "Credit Card";
+                }
+                else if (line.Contains("<ORG>"))
+                {
+                    int pos = (int)line.IndexOf("<ORG>");
+                    Info.OrgName = line[(pos + 5)..];
+                }
+                else if (line.Contains("<ACCTID>"))
+                {
+                    int pos = (int)line.IndexOf("<ACCTID>");
+                    string temp = line[(pos + 8)..];
+                    Info.AcctNum = StringHelpers.FormatAcctNumber(temp);
+                }
             }
         }
     }

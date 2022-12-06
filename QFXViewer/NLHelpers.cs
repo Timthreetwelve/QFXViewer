@@ -122,7 +122,7 @@ internal static class NLHelpers
         if (target is FileTarget ft)
         {
             // remove the enclosing apostrophes
-            return ft.FileName.ToString().Trim('\'');
+            return ft.FileName.ToString()!.Trim('\'');
         }
         return string.Empty;
     }

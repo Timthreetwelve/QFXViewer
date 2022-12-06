@@ -16,10 +16,10 @@ public abstract class SettingsManager<T> where T : SettingsManager<T>, new()
     #endregion Constants
 
     #region Properties
-    private static string Folder { get; set; }
-    private static string FileName { get; set; }
-    private static string FilePath { get; set; }
-    public static T Setting { get; private set; }
+    private static string? Folder { get; set; }
+    private static string? FileName { get; set; }
+    private static string? FilePath { get; set; }
+    public static T? Setting { get; private set; }
     #endregion Properties
 
     #region Initialization
@@ -37,7 +37,7 @@ public abstract class SettingsManager<T> where T : SettingsManager<T>, new()
         GetSettingsFile(Folder, FileName);
         if (!File.Exists(FilePath))
         {
-            CreateNewSettingsJson(FilePath);
+            CreateNewSettingsJson(FilePath!);
         }
         if (load)
         {
@@ -147,22 +147,25 @@ public abstract class SettingsManager<T> where T : SettingsManager<T>, new()
     /// <param name="filepath">Complete path and file name</param>
     private static void CreateNewSettingsJson(string filepath)
     {
-        try
+        if (filepath is not null)
         {
-            if (!Directory.Exists(Path.GetDirectoryName(filepath)))
+            try
             {
-                _ = Directory.CreateDirectory(Path.GetDirectoryName(filepath));
+                if (!Directory.Exists(Path.GetDirectoryName(filepath)))
+                {
+                    _ = Directory.CreateDirectory(Path.GetDirectoryName(filepath));
+                }
+                File.Create(filepath).Dispose();
+                const string braces = "{ }";
+                File.WriteAllText(filepath, braces);
             }
-            File.Create(filepath).Dispose();
-            const string braces = "{ }";
-            File.WriteAllText(filepath, braces);
-        }
-        catch (Exception ex)
-        {
-            _ = MessageBox.Show($"Error creating settings file.\n{ex}",
-                                 "Error",
-                                 MessageBoxButton.OK,
-                                 MessageBoxImage.Error);
+            catch (Exception ex)
+            {
+                _ = MessageBox.Show($"Error creating settings file.\n{ex}",
+                                     "Error",
+                                     MessageBoxButton.OK,
+                                     MessageBoxImage.Error);
+            }
         }
     }
     #endregion Create a new settings file

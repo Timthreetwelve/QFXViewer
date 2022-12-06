@@ -3,7 +3,7 @@
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>net6.0-windows</TargetFramework>
-    <Nullable>disable</Nullable>
+    <Nullable>annotations</Nullable>
     <UseWPF>true</UseWPF>
     <ApplicationIcon>Images\QFX.ico</ApplicationIcon>
     <Description>Views QFX files</Description>
@@ -28,10 +28,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Pages\" />
-  </ItemGroup>
-
-  <ItemGroup>
+    <None Update="License.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="ReadMe.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
