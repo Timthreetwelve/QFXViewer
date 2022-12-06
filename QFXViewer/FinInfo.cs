@@ -163,12 +163,12 @@ internal class FinInfo : INotifyPropertyChanged
                 }
                 else if (line.Contains("<ORG>"))
                 {
-                    int pos = (int)line.IndexOf("<ORG>");
+                    int pos = line.IndexOf("<ORG>");
                     Info.OrgName = line[(pos + 5)..];
                 }
                 else if (line.Contains("<ACCTID>"))
                 {
-                    int pos = (int)line.IndexOf("<ACCTID>");
+                    int pos = line.IndexOf("<ACCTID>");
                     string temp = line[(pos + 8)..];
                     Info.AcctNum = StringHelpers.FormatAcctNumber(temp);
                 }
