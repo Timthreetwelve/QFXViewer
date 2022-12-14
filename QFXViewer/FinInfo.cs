@@ -5,11 +5,12 @@ namespace QFXViewer;
 /// <summary>
 /// Class used to provide additional properties and methods.
 /// </summary>
-/// <seealso cref="System.ComponentModel.INotifyPropertyChanged" />
 internal class FinInfo : INotifyPropertyChanged
 {
-    private static IEnumerable<string>? qfxLines;
-    private static readonly Logger log = LogManager.GetLogger("logTemp");
+    #region Private fields
+    private static IEnumerable<string>? _qfxLines;
+    private static readonly Logger _log = LogManager.GetLogger("logTemp");
+    #endregion Private fields
 
     public static FinInfo Info { get; } = new FinInfo();
 
@@ -18,11 +19,11 @@ internal class FinInfo : INotifyPropertyChanged
     {
         get
         {
-            return acctType ?? "n/a";
+            return _acctType ?? "n/a";
         }
         set
         {
-            acctType = value;
+            _acctType = value;
             OnPropertyChanged();
         }
     }
@@ -31,11 +32,11 @@ internal class FinInfo : INotifyPropertyChanged
     {
         get
         {
-            return acctNum ?? "n/a";
+            return _acctNum ?? "n/a";
         }
         set
         {
-            acctNum = value;
+            _acctNum = value;
             OnPropertyChanged();
         }
     }
@@ -44,53 +45,53 @@ internal class FinInfo : INotifyPropertyChanged
     {
         get
         {
-            return orgName ?? "n/a";
+            return _orgName ?? "n/a";
         }
         set
         {
-            orgName = value;
+            _orgName = value;
             OnPropertyChanged();
         }
     }
 
     public decimal Balance
     {
-        get => balance;
+        get => _balance;
         set
         {
-            balance = value;
+            _balance = value;
             OnPropertyChanged();
         }
     }
 
     public DateTime BalanceAsOf
     {
-        get => balanceAsOf;
+        get => _balanceAsOf;
         set
         {
-            balanceAsOf = value;
+            _balanceAsOf = value;
             OnPropertyChanged();
         }
     }
 
     public string QFXFileName
     {
-        get => qfxFileName ?? "n/a";
+        get => _qfxFileName ?? "n/a";
         set
         {
-            qfxFileName = value;
+            _qfxFileName = value;
             OnPropertyChanged();
         }
     }
     #endregion Properties
 
     #region Private backing fields
-    private string? acctNum;
-    private string? acctType;
-    private decimal balance;
-    private DateTime balanceAsOf;
-    private string? orgName;
-    private string? qfxFileName;
+    private string? _acctNum;
+    private string? _acctType;
+    private decimal _balance;
+    private DateTime _balanceAsOf;
+    private string? _orgName;
+    private string? _qfxFileName;
 
     #endregion Private backing fields
 
@@ -116,24 +117,24 @@ internal class FinInfo : INotifyPropertyChanged
 
         if (!File.Exists(qfxFile))
         {
-            log.Error($"File not found: {qfxFile}");
+            _log.Error($"File not found: {qfxFile}");
             return false;
         }
 
-        qfxLines = File.ReadLines(qfxFile);
+        _qfxLines = File.ReadLines(qfxFile);
 
-        if (!qfxLines.Any(x => x.Contains("<OFX>")))
+        if (!_qfxLines.Any(x => x.Contains("<OFX>")))
         {
-            log.Error($"{qfxFile} <OFX> tag not found.");
+            _log.Error($"{qfxFile} <OFX> tag not found.");
             return false;
         }
 
-        if (qfxLines.Any(x => x.Contains("<STMTTRNRS>")))
+        if (_qfxLines.Any(x => x.Contains("<STMTTRNRS>")))
         {
             stmtFound = true;
         }
 
-        if (qfxLines.Any(x => x.Contains("<CCSTMTTRNRS>")))
+        if (_qfxLines.Any(x => x.Contains("<CCSTMTTRNRS>")))
         {
             stmtFound = true;
         }
@@ -148,9 +149,9 @@ internal class FinInfo : INotifyPropertyChanged
     {
         TextInfo textInfo = new CultureInfo("en-US").TextInfo;
 
-        if (qfxLines != null)
+        if (_qfxLines != null)
         {
-            foreach (string line in qfxLines)
+            foreach (string line in _qfxLines)
             {
                 if (line.Contains("<ACCTTYPE>"))
                 {

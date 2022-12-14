@@ -8,11 +8,11 @@ namespace QFXViewer;
 public partial class MainWindow : Window
 {
     #region Stopwatch
-    private readonly Stopwatch stopwatch = new();
+    private readonly Stopwatch _stopwatch = new();
     #endregion Stopwatch
 
     #region NLog Instance
-    private static readonly Logger log = LogManager.GetLogger("logTemp");
+    private static readonly Logger _log = LogManager.GetLogger("logTemp");
     #endregion NLog Instance
 
     public MainWindow()
@@ -32,7 +32,7 @@ public partial class MainWindow : Window
     /// </summary>
     private void InitializeSettings()
     {
-        stopwatch.Start();
+        _stopwatch.Start();
 
         UserSettings.Init(UserSettings.AppFolder, UserSettings.DefaultFilename, true);
     }
@@ -49,16 +49,16 @@ public partial class MainWindow : Window
         WindowTitleVersionAdmin();
 
         // Log the version, build date and commit id
-        log.Info($"{AppInfo.AppName} ({AppInfo.AppProduct}) {AppInfo.AppVersion} is starting up");
-        log.Info($"{AppInfo.AppName} {AppInfo.AppCopyright}");
-        log.Debug($"{AppInfo.AppName} Build date: {BuildInfo.BuildDateUtc.ToUniversalTime():f} (UTC)");
-        log.Debug($"{AppInfo.AppName} Commit ID: {BuildInfo.CommitIDString} ");
+        _log.Info($"{AppInfo.AppName} ({AppInfo.AppProduct}) {AppInfo.AppVersion} is starting up");
+        _log.Info($"{AppInfo.AppName} {AppInfo.AppCopyright}");
+        _log.Debug($"{AppInfo.AppName} Build date: {BuildInfo.BuildDateUtc.ToUniversalTime():f} (UTC)");
+        _log.Debug($"{AppInfo.AppName} Commit ID: {BuildInfo.CommitIDString} ");
 
         // Log the .NET version, app framework and OS platform
         string version = Environment.Version.ToString();
-        log.Debug($".NET version: {AppInfo.RuntimeVersion.Replace(".NET", "")}  ({version})");
-        log.Debug(AppInfo.Framework);
-        log.Debug(AppInfo.OsPlatform);
+        _log.Debug($".NET version: {AppInfo.RuntimeVersion.Replace(".NET", "")}  ({version})");
+        _log.Debug(AppInfo.Framework);
+        _log.Debug(AppInfo.OsPlatform);
 
         // Window position
         UserSettings.Setting.SetWindowPos();
@@ -87,7 +87,7 @@ public partial class MainWindow : Window
     {
         PropertyInfo prop = sender.GetType().GetProperty(e.PropertyName);
         object newValue = prop?.GetValue(sender, null);
-        log.Debug($"Setting change: {e.PropertyName} New Value: {newValue}");
+        _log.Debug($"Setting change: {e.PropertyName} New Value: {newValue}");
         switch (e.PropertyName)
         {
             case nameof(UserSettings.Setting.KeepOnTop):
@@ -123,8 +123,8 @@ public partial class MainWindow : Window
     private void Window_Closing(object sender, CancelEventArgs e)
     {
         // Stop the stopwatch and record elapsed time
-        stopwatch.Stop();
-        log.Info($"{AppInfo.AppName} is shutting down.  Elapsed time: {stopwatch.Elapsed:h\\:mm\\:ss\\.ff}");
+        _stopwatch.Stop();
+        _log.Info($"{AppInfo.AppName} is shutting down.  Elapsed time: {_stopwatch.Elapsed:h\\:mm\\:ss\\.ff}");
 
         // Shut down NLog
         LogManager.Shutdown();
@@ -172,14 +172,14 @@ public partial class MainWindow : Window
     /// <param name="args"></param>
     private static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs args)
     {
-        log.Error("Unhandled Exception");
+        _log.Error("Unhandled Exception");
         Exception e = (Exception)args.ExceptionObject;
-        log.Error(e.Message);
+        _log.Error(e.Message);
         if (e.InnerException != null)
         {
-            log.Error(e.InnerException.ToString());
+            _log.Error(e.InnerException.ToString());
         }
-        log.Error(e.StackTrace);
+        _log.Error(e.StackTrace);
 
         _ = MessageBox.Show("An error has occurred. See the log file",
             "ERROR",
@@ -198,18 +198,18 @@ public partial class MainWindow : Window
 
         if (clArgs?.Length > 1 && File.Exists(clArgs[1]))
         {
-            log.Debug($"File was found: {clArgs[1]}");
+            _log.Debug($"File was found: {clArgs[1]}");
             FileInfo file = new(clArgs[1]);
             if (string.Equals(file.Extension, ".qfx", StringComparison.OrdinalIgnoreCase))
             {
-                log.Info($"File {file.FullName} was specified on the command line.");
+                _log.Info($"File {file.FullName} was specified on the command line.");
                 FinInfo.Info.QFXFileName = file.FullName;
                 ProcessQfxFile(file.FullName);
             }
         }
         if (clArgs?.Length > 1 && !File.Exists(clArgs[1]))
         {
-            log.Warn($"\"{clArgs[1]}\" was specified on the command line but a file with that name couold not be found.");
+            _log.Warn($"\"{clArgs[1]}\" was specified on the command line but a file with that name couold not be found.");
         }
     }
     #endregion Command line
@@ -233,11 +233,11 @@ public partial class MainWindow : Window
                 TheDataGrid.ItemsSource = stmt.Transactions;
                 if (stmt.Transactions.Count == 1)
                 {
-                    log.Info($"Found {stmt.Transactions.Count} transaction in {qfxFile}");
+                    _log.Info($"Found {stmt.Transactions.Count} transaction in {qfxFile}");
                 }
                 else
                 {
-                    log.Info($"Found {stmt.Transactions.Count} transactions in {qfxFile}");
+                    _log.Info($"Found {stmt.Transactions.Count} transactions in {qfxFile}");
                 }
             }
             catch (Exception ex)
@@ -263,7 +263,7 @@ public partial class MainWindow : Window
         FinInfo.Info.Balance = 0;
         FinInfo.Info.BalanceAsOf = default;
         TheDataGrid.ItemsSource = null;
-        log.Error(ex, $"Error reading {filename}");
+        _log.Error(ex, $"Error reading {filename}");
         _ = MessageBox.Show("QFX file was not found, is invalid or empty.\nSee the log file for more info.",
                             "Error",
                             MessageBoxButton.OK,
@@ -314,7 +314,7 @@ public partial class MainWindow : Window
         p.StartInfo.UseShellExecute = true;
         p.StartInfo.ErrorDialog = false;
         _ = p.Start();
-        log.Debug($"Opening {FinInfo.Info.QFXFileName} in Notepad.exe");
+        _log.Debug($"Opening {FinInfo.Info.QFXFileName} in Notepad.exe");
     }
 
     private void MnuAbout_Click(object sender, RoutedEventArgs e)
@@ -448,7 +448,7 @@ public partial class MainWindow : Window
         if (e.Data?.GetDataPresent(DataFormats.FileDrop) == true)
         {
             string filename = ((DataObject)e.Data).GetFileDropList().Cast<string>().ToList().FirstOrDefault();
-            log.Debug($"File dropped: {filename}");
+            _log.Debug($"File dropped: {filename}");
             FinInfo.Info.QFXFileName = filename;
             ProcessQfxFile(filename);
         }

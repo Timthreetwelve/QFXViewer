@@ -27,90 +27,90 @@ public class UserSettings : SettingsManager<UserSettings>, INotifyPropertyChange
     #region Properties
     public int DarkMode
     {
-        get => darkmode;
+        get => _darkmode;
         set
         {
-            darkmode = value;
+            _darkmode = value;
             OnPropertyChanged();
         }
     }
 
     public bool IncludeDebug
     {
-        get => includeDebug;
+        get => _includeDebug;
         set
         {
-            includeDebug = value;
+            _includeDebug = value;
             OnPropertyChanged();
         }
     }
 
     public bool KeepOnTop
     {
-        get => keepOnTop;
+        get => _keepOnTop;
         set
         {
-            keepOnTop = value;
+            _keepOnTop = value;
             OnPropertyChanged();
         }
     }
 
     public int PrimaryColor
     {
-        get => primaryColor;
+        get => _primaryColor;
         set
         {
-            primaryColor = value;
+            _primaryColor = value;
             OnPropertyChanged();
         }
     }
 
     public bool ShowMemoCol
     {
-        get => showMemoCol;
+        get => _showMemoCol;
         set
         {
-            showMemoCol = value;
+            _showMemoCol = value;
             OnPropertyChanged();
         }
     }
 
     public bool ShowRefCol
     {
-        get => showRefCol;
+        get => _showRefCol;
         set
         {
-            showRefCol = value;
+            _showRefCol = value;
             OnPropertyChanged();
         }
     }
 
     public bool ShowTransCol
     {
-        get => showTransCol;
+        get => _showTransCol;
         set
         {
-            showTransCol = value;
+            _showTransCol = value;
             OnPropertyChanged();
         }
     }
 
     public bool ShowTypeCol
     {
-        get => showTypeCol;
+        get => _showTypeCol;
         set
         {
-            showTypeCol = value;
+            _showTypeCol = value;
             OnPropertyChanged();
         }
     }
 
     public int UISize
     {
-        get => uiSize;
+        get => _uiSize;
         set
         {
-            uiSize = value;
+            _uiSize = value;
             OnPropertyChanged();
         }
     }
@@ -119,69 +119,69 @@ public class UserSettings : SettingsManager<UserSettings>, INotifyPropertyChange
     {
         get
         {
-            if (windowHeight < 100)
+            if (_windowHeight < 100)
             {
-                windowHeight = 100;
+                _windowHeight = 100;
             }
-            return windowHeight;
+            return _windowHeight;
         }
-        set => windowHeight = value;
+        set => _windowHeight = value;
     }
 
     public double WindowLeft
     {
         get
         {
-            if (windowLeft < 0)
+            if (_windowLeft < 0)
             {
-                windowLeft = 100;
+                _windowLeft = 100;
             }
-            return windowLeft;
+            return _windowLeft;
         }
-        set => windowLeft = value;
+        set => _windowLeft = value;
     }
 
     public double WindowTop
     {
         get
         {
-            if (windowTop < 0)
+            if (_windowTop < 0)
             {
-                windowTop = 100;
+                _windowTop = 100;
             }
-            return windowTop;
+            return _windowTop;
         }
-        set => windowTop = value;
+        set => _windowTop = value;
     }
 
     public double WindowWidth
     {
         get
         {
-            if (windowWidth < 100)
+            if (_windowWidth < 100)
             {
-                windowWidth = 100;
+                _windowWidth = 100;
             }
-            return windowWidth;
+            return _windowWidth;
         }
-        set => windowWidth = value;
+        set => _windowWidth = value;
     }
     #endregion Properties
 
     #region Private backing fields
-    private int darkmode = (int)ThemeType.System;
-    private bool includeDebug;
-    private bool keepOnTop;
-    private int primaryColor = (int)AccentColor.Blue;
-    private bool showMemoCol = true;
-    private bool showRefCol = true;
-    private bool showTransCol = true;
-    private bool showTypeCol = true;
-    private int uiSize = (int)MySize.Default;
-    private double windowHeight = 500;
-    private double windowLeft = 300;
-    private double windowTop = 300;
-    private double windowWidth = 800;
+    private int _darkmode = (int)ThemeType.System;
+    private bool _includeDebug;
+    private bool _keepOnTop;
+    private int _primaryColor = (int)AccentColor.Blue;
+    private bool _showMemoCol = true;
+    private bool _showRefCol = true;
+    private bool _showTransCol = true;
+    private bool _showTypeCol = true;
+    private int _uiSize = (int)MySize.Default;
+    private double _windowHeight = 500;
+    private double _windowLeft = 300;
+    private double _windowTop = 300;
+    private double _windowWidth = 800;
     #endregion Private backing fields
 
     #region Handle property change event
