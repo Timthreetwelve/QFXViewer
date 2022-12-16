@@ -247,7 +247,15 @@ public partial class MainWindow : Window
         }
         else
         {
-            ErrorEncountered(qfxFile, null);
+            string bankMessage = FinInfo.GetBankMsg();
+            if (bankMessage != string.Empty)
+            {
+                ProcessBankMessage(qfxFile, bankMessage);
+            }
+            else
+            {
+                ProcessBankMessage(qfxFile, "Unknown Error");
+            }
         }
     }
 
@@ -265,6 +273,26 @@ public partial class MainWindow : Window
         TheDataGrid.ItemsSource = null;
         _log.Error(ex, $"Error reading {filename}");
         _ = MessageBox.Show("QFX file was not found, is invalid or empty.\nSee the log file for more info.",
+                            "Error",
+                            MessageBoxButton.OK,
+                            MessageBoxImage.Error);
+    }
+
+    /// <summary>
+    /// Gets bank message text.
+    /// </summary>
+    /// <param name="filename">The QFX filename.</param>
+    /// <param name="msg">The message.</param>
+    private void ProcessBankMessage(string filename, string msg)
+    {
+        FinInfo.Info.AcctNum = null;
+        FinInfo.Info.AcctType = null;
+        FinInfo.Info.Balance = 0;
+        FinInfo.Info.BalanceAsOf = default;
+        TheDataGrid.ItemsSource = null;
+        _log.Warn($"Error reading {filename}");
+        _log.Warn(msg);
+        _ = MessageBox.Show($"Bank message:\n\n{msg}",
                             "Error",
                             MessageBoxButton.OK,
                             MessageBoxImage.Error);

@@ -138,7 +138,6 @@ internal class FinInfo : INotifyPropertyChanged
         {
             stmtFound = true;
         }
-
         return stmtFound;
     }
 
@@ -175,6 +174,44 @@ internal class FinInfo : INotifyPropertyChanged
                 }
             }
         }
+    }
+
+    /// <summary>
+    /// Gets the bank message
+    /// </summary>
+    /// <returns>
+    /// Text of the message if one is found. Otherwise returns string.empty.
+    /// </returns>
+    public static string GetBankMsg()
+    {
+        if (_qfxLines != null)
+        {
+            string qfxLines = string.Concat(_qfxLines);
+
+            int from = qfxLines.IndexOf("<BANKMSGSRSV1>");
+            if (from == -1)
+            {
+                return string.Empty;
+            }
+            else
+            {
+                int to = qfxLines.IndexOf("</BANKMSGSRSV1>");
+                if (to == -1)
+                {
+                    return string.Empty;
+                }
+                else
+                {
+                    from += "<BANKMSGSRSV1>".Length;
+                    string msg = qfxLines[from..to];
+                    if (!msg.StartsWith('<'))
+                    {
+                        return msg;
+                    }
+                }
+            }
+        }
+        return string.Empty;
     }
     #endregion Methods
 }
